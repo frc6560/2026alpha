@@ -147,14 +147,14 @@ public class SwerveSubsystem extends SubsystemBase {
       Pose2d limelightPose = limelightPoseEstimate.pose;
       if (limelightPose == null || limelightPoseEstimate.tagCount < 1 || limelightPose.equals(emptyPose)) return;
       double adjustedTime = Timer.getFPGATimestamp() - limelightPoseEstimate.latency / 1000;
-      // if(limelightPoseEstimate.avgTagDist > 2.2) return; // Don't use vision if the tags are too far away
+      if(limelightPoseEstimate.avgTagDist > 2.7) return; // Don't use vision if the tags are too far away
       if(adjustedTime > 0){
-        // if(limelightPoseEstimate.tagCount < 2 && limelightPoseEstimate.avgTagDist > 1.3){
-        //   limelightPose = new Pose2d(
-        //     limelightPose.getTranslation(),
-        //     swerveDrive.getOdometryHeading()
-        //   );
-        // }
+        if(limelightPoseEstimate.tagCount < 2 && limelightPoseEstimate.avgTagDist > 1.3){
+          limelightPose = new Pose2d(
+            limelightPose.getTranslation(),
+            swerveDrive.getOdometryHeading()
+          );
+        }
         swerveDrive.addVisionMeasurement(limelightPose, adjustedTime);
       }
     }
@@ -183,6 +183,7 @@ public class SwerveSubsystem extends SubsystemBase {
       },
       (interrupted) -> {
         drive(new ChassisSpeeds());
+        updateOdometryWithVision("limelight-right");
       },
       () -> Math.abs(tx) < 1.0);
       return trackAprilTagCommand;
