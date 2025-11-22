@@ -168,12 +168,19 @@ public class SwerveSubsystem extends SubsystemBase {
       () -> {
       },
       () -> {
-        tx = LimelightHelpers.getTX("limelight-right");
-        double tx_rad = Units.degreesToRadians(tx);
-        tx_rad = - filter.calculate(tx_rad);
-        double thetaOutput = angleController.calculate(tx_rad, 0);
+        double thetaOutput;
+        // If it sees the tag use a tx based PID loop to turn to face it
+        if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") > 0){
+          tx = LimelightHelpers.getTX("limelight-right");
+          double tx_rad = Units.degreesToRadians(tx);
+          tx_rad = - filter.calculate(tx_rad);
+          thetaOutput = angleController.calculate(tx_rad, 0);
+        }  
+        else{
+          thetaOutput = angleController.calculate(getPose().getRotation().getRadians(), 0);
+        }
         SmartDashboard.getEntry("Theta Error").setDouble(angleController.getError());
-        if(Math.abs(tx_rad) > 0.017){
+        if(Math.abs(angleController.getError()) > 0.017){
           drive(new ChassisSpeeds(
             0,
             0,
