@@ -125,7 +125,7 @@ public class AutoFactory {
     /** Scores 3 pieces in the center. */
     Pair<Pose2d, Command> getThreePieceCenter(){
         return Pair.of(
-            FieldConstants.START,
+            null,
             Commands.defer(() -> Commands.sequence(
                 drivetrain.getAutonomousCommand("shooter_1"),
                 drivetrain.trackAprilTag(),
@@ -139,16 +139,10 @@ public class AutoFactory {
 
     Pair<Pose2d, Command> getTest(){
         return Pair.of(
-            FieldConstants.START,
-            // FieldConstants.getRight(alliance),
-            // Commands.defer(() -> Commands.sequence(
-            //     scoreFactory.getScoreAuto(ReefSide.RIGHT, ReefIndex.TOP_LEFT, ReefLevel.L4),
-            //     new IntakeCommand(wrist, elevator, drivetrain, PickupLocations.TEST),
-            //     scoreFactory.getScoreAuto(ReefSide.LEFT, ReefIndex.TOP_LEFT, ReefLevel.L4),
-            //     new IntakeCommand(wrist, elevator, drivetrain, PickupLocations.TEST),
-            //     scoreFactory.getScoreAuto(ReefSide.RIGHT, ReefIndex.TOP_LEFT, ReefLevel.L3)
-            // ), Set.of(wrist, elevator, grabber, drivetrain))
-            IDLE
+            null,
+            Commands.defer(() -> Commands.sequence(
+                drivetrain.getAutonomousCommand("shooter_4"))
+            , Set.of(drivetrain))
         );
     }
 
