@@ -127,6 +127,8 @@ public class AutoFactory {
         return Pair.of(
             FieldConstants.START,
             Commands.defer(() -> Commands.sequence(
+                drivetrain.getAutonomousCommand("shooter_1"),
+                drivetrain.trackAprilTag(),
                 drivetrain.getAutonomousCommand("shooter_2"),
                 drivetrain.trackAprilTag(),
                 drivetrain.getAutonomousCommand("shooter_3"),
