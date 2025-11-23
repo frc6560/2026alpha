@@ -177,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase {
           thetaOutput = angleController.calculate(tx_rad, 0);
         }  
         else{
-          thetaOutput = angleController.calculate(getPose().getRotation().getRadians(), 0);
+          thetaOutput = angleController.calculate(getPose().getRotation().getRadians(), -90);
         }
         SmartDashboard.getEntry("Theta Error").setDouble(angleController.getError());
         if(Math.abs(angleController.getError()) > 0.017){
