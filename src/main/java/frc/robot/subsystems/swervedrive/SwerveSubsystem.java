@@ -105,7 +105,6 @@ public class SwerveSubsystem extends SubsystemBase {
                                                0.1);
     swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                 1); 
-    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
     swerveDrive.replaceSwerveModuleFeedforward(driveFF);
     setMotorBrake(true);
     setupPathPlanner();
@@ -224,31 +223,41 @@ public class SwerveSubsystem extends SubsystemBase {
           (speedsRobotRelative, moduleFeedForwards) -> {
             if (enableFeedforward)
             {
-              speedsRobotRelative = new ChassisSpeeds(
-                  speedsRobotRelative.vxMetersPerSecond,
-                  speedsRobotRelative.vyMetersPerSecond,
-                  speedsRobotRelative.omegaRadiansPerSecond
-              );
+              speedsRobotRelative = new ChassisSpeeds(speedsRobotRelative.vxMetersPerSecond,
+                                                      speedsRobotRelative.vyMetersPerSecond,
+                                                      speedsRobotRelative.omegaRadiansPerSecond); // this is inverted please save me
               swerveDrive.drive(
                   speedsRobotRelative,
                   swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
                   moduleFeedForwards.linearForces()
-              );
-            } else {
+                              );
+            } else
+            {
               swerveDrive.setChassisSpeeds(speedsRobotRelative);
             }
           },
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),
+              new PIDConstants(DrivebaseConstants.kP_translation, 
+                                DrivebaseConstants.kI_translation, 
+                                DrivebaseConstants.kD_translation),  // these constants can go kys
               // Translation PID constants
-              new PIDConstants(5.0, 0.0, 0.0)
+              new PIDConstants(DrivebaseConstants.kP_rotation,
+                                DrivebaseConstants.kI_rotation, 
+                                DrivebaseConstants.kD_rotation) 
               // Rotation PID constants
           ),
           config,
+          
+          
+          
           // The robot configuration
           () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent())
             {
@@ -258,7 +267,7 @@ public class SwerveSubsystem extends SubsystemBase {
           },
           this
           // Reference to this subsystem to set requirements
-                           );
+                          );
 
     } catch (Exception e)
     {
@@ -266,8 +275,6 @@ public class SwerveSubsystem extends SubsystemBase {
       e.printStackTrace();
     }
 
-    //Preload PathPlanner Path finding
-    // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
     PathfindingCommand.warmupCommand().schedule();
   }
 
@@ -544,7 +551,14 @@ public class SwerveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d initialHolonomicPose)
   {
     swerveDrive.resetOdometry(initialHolonomicPose);
+    System.out.println("Resetting odometry to: " + initialHolonomicPose);
+    try {
+      throw new Exception();
+    } catch (Exception e) {
+      e.printStackTrace();
   }
+  }
+
 
   /**
    * Gets the current pose (position and rotation) of the robot, as reported by odometry.
@@ -587,8 +601,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public void zeroNoAprilTagsGyro() {
     // 1. Zero the gyro sensor itself
     zeroGyro();
-    
-    // 2. Reset odometry so the current position is kept and rotation is defined as 0°
     Pose2d currentPose = getPose();
     resetOdometry(new Pose2d(
         currentPose.getTranslation(),
@@ -605,24 +617,6 @@ public class SwerveSubsystem extends SubsystemBase {
   {
     var alliance = DriverStation.getAlliance();
     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-  }
-
-  /**
-   * This will zero (calibrate) the robot to assume the current position is facing forward
-   * <p>
-   * If red alliance rotate the robot 180 after the drviebase zero command
-   */
-  public void zeroGyroWithAlliance()
-  {
-    if (isRedAlliance())
-    {
-      zeroGyro();
-      //Set the pose 180 degrees
-      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
-    } else
-    {
-      zeroGyro();
-    }
   }
 
   /**

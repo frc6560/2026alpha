@@ -26,11 +26,6 @@ public class Auto {
         return autoCommand.getSecond();
     }
 
-    public Pose2d getStartPose(){
-        update();
-        return autoCommand.getFirst();
-    }
-
     public String getName() {
         return name;
     }

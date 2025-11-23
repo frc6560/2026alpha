@@ -33,10 +33,6 @@ public class AutoFactory {
 
     private static final Command IDLE= Commands.idle();
 
-    public Command getResetGyro(Pose2d startPose) {
-        return Commands.runOnce(() -> drivetrain.getSwerveDrive().setGyro(new Rotation3d(0, 0, startPose.getRotation().getRadians())), drivetrain);
-    }
-
     /** These literally do nothing. As in, nothing. */
     Pair<Pose2d, Command> getNoAutoLeft(){
         return Pair.of(null, IDLE);
