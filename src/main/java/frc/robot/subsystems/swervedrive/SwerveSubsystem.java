@@ -166,10 +166,10 @@ public class SwerveSubsystem extends SubsystemBase {
     LinearFilter filter = LinearFilter.movingAverage(5);
     Command trackAprilTagCommand = new FunctionalCommand(
       () -> {
-        m_angleController.enableContinuousInput(-Math.PI, Math.PI);
       },
       () -> {
         double thetaOutput;
+        m_angleController.enableContinuousInput(-Math.PI, Math.PI);
         // If it sees the tag use a tx based PID loop to turn to face it
         if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") != 0){
           tx = LimelightHelpers.getTX("limelight-right");
