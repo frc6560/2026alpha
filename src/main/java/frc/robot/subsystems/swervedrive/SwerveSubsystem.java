@@ -131,7 +131,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // updateVisionPoseEstimator();
+    updateVisionPoseEstimator();
     SmartDashboard.getEntry("Limelight TX").setDouble(LimelightHelpers.getTX("limelight-right"));
   }
 
