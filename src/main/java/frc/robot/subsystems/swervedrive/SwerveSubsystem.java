@@ -17,6 +17,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -168,20 +169,20 @@ public class SwerveSubsystem extends SubsystemBase {
       () -> {
       },
       () -> {
-        double thetaOutput;
+        double thetaError;
         m_angleController.enableContinuousInput(-Math.PI, Math.PI);
         // If it sees the tag use a tx based PID loop to turn to face it
         if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") != 0){
           tx = LimelightHelpers.getTX("limelight-right");
           double tx_rad = Units.degreesToRadians(tx);
-          tx_rad = filter.calculate(tx_rad);
-          thetaOutput = m_angleController.calculate(tx_rad, 0);
+          thetaError = filter.calculate(tx_rad);
         }  
         else{
           Translation2d targetVector = FieldConstants.TARGET_POSE.getTranslation().minus(getPose().getTranslation());
           double targetAngle = Math.atan2(targetVector.getY(), targetVector.getX());
-          thetaOutput = (-1) * m_angleController.calculate(getPose().getRotation().getRadians(), targetAngle);
+          thetaError = MathUtil.angleModulus(targetAngle - getPose().getRotation().getRadians());
         }
+        double thetaOutput = m_angleController.calculate(thetaError, 0);
         SmartDashboard.getEntry("Theta Error").setDouble(m_angleController.getError());
         if(Math.abs(m_angleController.getError()) > 0.017){
           swerveDrive.driveFieldOriented(new ChassisSpeeds(
