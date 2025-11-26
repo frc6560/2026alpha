@@ -195,7 +195,7 @@ public class SwerveSubsystem extends SubsystemBase {
         drive(new ChassisSpeeds());
         updateOdometryWithVision("limelight-right");
       },
-      () -> Math.abs(tx) < 1.0);
+      () -> Math.abs(tx) < 1.0 && LimelightHelpers.getTV("limelight-right"));
       return trackAprilTagCommand;
     }
 
