@@ -180,11 +180,11 @@ public class SwerveSubsystem extends SubsystemBase {
         else{
           Translation2d targetVector = FieldConstants.TARGET_POSE.getTranslation().minus(getPose().getTranslation());
           double targetAngle = Math.atan2(targetVector.getY(), targetVector.getX());
-          thetaOutput = m_angleController.calculate(getPose().getRotation().getRadians(), targetAngle);
+          thetaOutput = (-1) * m_angleController.calculate(getPose().getRotation().getRadians(), targetAngle);
         }
         SmartDashboard.getEntry("Theta Error").setDouble(m_angleController.getError());
         if(Math.abs(m_angleController.getError()) > 0.017){
-          drive(new ChassisSpeeds(
+          swerveDrive.driveFieldOriented(new ChassisSpeeds(
             0,
             0,
             (-1) * thetaOutput
