@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.utility.LimelightHelpers;
 import frc.robot.utility.LimelightHelpers.PoseEstimate;
 
@@ -75,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                  DrivebaseConstants.kStdvY, 
                                                  DrivebaseConstants.kStdvTheta);
 
-  PIDController angleController = new PIDController(5.0, 0.0, 0.0); // tune values
+  PIDController m_angleController = new PIDController(5.0, 0.0, 0.0); // tune values
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -165,25 +166,28 @@ public class SwerveSubsystem extends SubsystemBase {
     LinearFilter filter = LinearFilter.movingAverage(5);
     Command trackAprilTagCommand = new FunctionalCommand(
       () -> {
+        m_angleController.enableContinuousInput(-Math.PI, Math.PI);
       },
       () -> {
         double thetaOutput;
         // If it sees the tag use a tx based PID loop to turn to face it
-        if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") > 0){
+        if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") != 0){
           tx = LimelightHelpers.getTX("limelight-right");
           double tx_rad = Units.degreesToRadians(tx);
-          tx_rad = - filter.calculate(tx_rad);
-          thetaOutput = angleController.calculate(tx_rad, 0);
+          tx_rad = filter.calculate(tx_rad);
+          thetaOutput = m_angleController.calculate(tx_rad, 0);
         }  
         else{
-          thetaOutput = angleController.calculate(getPose().getRotation().getRadians(), -90);
+          Translation2d targetVector = FieldConstants.TARGET_POSE.getTranslation().minus(getPose().getTranslation());
+          double targetAngle = Math.atan2(targetVector.getY(), targetVector.getX());
+          thetaOutput = m_angleController.calculate(getPose().getRotation().getRadians(), targetAngle);
         }
-        SmartDashboard.getEntry("Theta Error").setDouble(angleController.getError());
-        if(Math.abs(angleController.getError()) > 0.017){
+        SmartDashboard.getEntry("Theta Error").setDouble(m_angleController.getError());
+        if(Math.abs(m_angleController.getError()) > 0.017){
           drive(new ChassisSpeeds(
             0,
             0,
-            thetaOutput
+            (-1) * thetaOutput
           ));
         }
       },
