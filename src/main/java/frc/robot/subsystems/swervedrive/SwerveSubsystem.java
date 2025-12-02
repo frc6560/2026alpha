@@ -17,6 +17,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -47,6 +48,7 @@ import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.utility.LimelightHelpers;
 import frc.robot.utility.LimelightHelpers.PoseEstimate;
+import frc.robot.utility.Setpoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +79,15 @@ public class SwerveSubsystem extends SubsystemBase {
                                                  DrivebaseConstants.kStdvY, 
                                                  DrivebaseConstants.kStdvTheta);
 
-  PIDController m_angleController = new PIDController(5.0, 0.0, 0.0); // tune values
+  PIDController m_pidControllerX = new PIDController(DrivebaseConstants.kP_translation, 
+                                                          DrivebaseConstants.kI_translation, 
+                                                          DrivebaseConstants.kD_translation);
+  PIDController m_pidControllerY = new PIDController(DrivebaseConstants.kP_translation,
+                                                          DrivebaseConstants.kI_translation, 
+                                                          DrivebaseConstants.kD_translation);
+  PIDController m_pidControllerTheta = new PIDController(DrivebaseConstants.kP_rotation,
+                                                          DrivebaseConstants.kI_rotation,
+                                                          DrivebaseConstants.kD_rotation); // tune values
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -161,6 +171,32 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  /** Full PID commands with all three parameters
+   */
+  public void followSegment(SwerveSample setpoint) {
+    m_pidControllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+    Pose2d pose = getPose();
+    m_pidControllerX.setIZone(0.5);
+    m_pidControllerY.setIZone(0.5);
+    m_pidControllerTheta.setIZone(Units.degreesToRadians(1.0));
+
+    ChassisSpeeds targetSpeeds = new ChassisSpeeds( 
+      setpoint.vx + m_pidControllerX.calculate(pose.getX(), setpoint.x), 
+      setpoint.vy + m_pidControllerY.calculate(pose.getY(), setpoint.y),
+      setpoint.omega + m_pidControllerTheta.calculate(pose.getRotation().getRadians(), setpoint.heading)
+    );
+
+    // Log some basic data to see if path following is accurate.
+    swerveDrive.field.getObject("TargetPose").setPose(setpoint.getPose());
+    SmartDashboard.getEntry("X Error").setDouble(m_pidControllerX.getError());
+    SmartDashboard.getEntry("Y Error").setDouble(m_pidControllerY.getError());
+    SmartDashboard.getEntry("Theta Error").setDouble(m_pidControllerTheta.getError());
+    SmartDashboard.getEntry("VX Error").setDouble(Math.abs(setpoint.vx - swerveDrive.getRobotVelocity().vxMetersPerSecond));
+    SmartDashboard.getEntry("VY Error").setDouble(Math.abs(setpoint.vy - swerveDrive.getRobotVelocity().vyMetersPerSecond));
+
+    swerveDrive.driveFieldOriented(targetSpeeds);
+  }
+
   double tx;
 
   public Command trackAprilTag(){
@@ -170,31 +206,28 @@ public class SwerveSubsystem extends SubsystemBase {
       },
       () -> {
         double thetaError;
-        m_angleController.enableContinuousInput(-Math.PI, Math.PI);
-        // If it sees the tag use a tx based PID loop to turn to face it
+        m_pidControllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+        // If it sees the tag, use the limelight raw tx value over a linear filter. Otherwise, use pose estimator.
         if(LimelightHelpers.getTV("limelight-right") && LimelightHelpers.getTX("limelight-right") != 0){
           tx = LimelightHelpers.getTX("limelight-right");
           double tx_rad = Units.degreesToRadians(tx);
-          thetaError = filter.calculate(tx_rad);
+          thetaError = (-1) * filter.calculate(tx_rad);
         }  
         else{
           Translation2d targetVector = FieldConstants.TARGET_POSE.getTranslation().minus(getPose().getTranslation());
           double targetAngle = Math.atan2(targetVector.getY(), targetVector.getX());
-          thetaError = (-1) * MathUtil.angleModulus(targetAngle - getPose().getRotation().getRadians());
+          thetaError = MathUtil.angleModulus(targetAngle - getPose().getRotation().getRadians());
         }
-        double thetaOutput = m_angleController.calculate(thetaError, 0);
-        SmartDashboard.getEntry("Theta Error").setDouble(m_angleController.getError());
-        if(Math.abs(m_angleController.getError()) > 0.017){
-          swerveDrive.driveFieldOriented(new ChassisSpeeds(
+        double thetaOutput = m_pidControllerTheta.calculate(thetaError, 0);
+        SmartDashboard.getEntry("Theta Error").setDouble(m_pidControllerTheta.getError());
+        swerveDrive.driveFieldOriented(new ChassisSpeeds(
             0,
             0,
-            (-1) * thetaOutput
-          ));
-        }
+            thetaOutput
+        ));
       },
       (interrupted) -> {
         drive(new ChassisSpeeds());
-        updateOdometryWithVision("limelight-right");
       },
       () -> Math.abs(tx) < 1.0 && LimelightHelpers.getTV("limelight-right"));
       return trackAprilTagCommand;
