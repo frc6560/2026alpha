@@ -47,24 +47,24 @@ public class VisionSubsystem extends SubsystemBase{
 
 
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
+        robotPose2d = poseEstimate.pose;
+        latency = poseEstimate.latency / 1000.0; // in milliseconds
+
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
         SmartDashboard.putNumber(this.name + "/RecordTimestamp", Timer.getFPGATimestamp()); 
         SmartDashboard.putNumber(this.name + "/Latency", latency);
 
         // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
-            SmartDashboard.putNumber(this.name + "/PoseX", poseEstimate.pose.getX());
-            SmartDashboard.putNumber(this.name + "/PoseY", poseEstimate.pose.getY());
-            SmartDashboard.putNumber(this.name + "/PoseTheta", poseEstimate.pose.getRotation().getDegrees());
+            SmartDashboard.putNumber(this.name + "/PoseX", robotPose2d.getX());
+            SmartDashboard.putNumber(this.name + "/PoseY", robotPose2d.getY());
+            SmartDashboard.putNumber(this.name + "/PoseTheta", robotPose2d.getRotation().getDegrees());
         }
         // Rejects bad measurements, like sudden jumps in vision pose.
-        if(poseEstimate.pose.getTranslation()
-            .getDistance(robotPose2d.getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
+        if(robotPose2d.getTranslation()
+            .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
             return;
         }
-
-        robotPose2d = poseEstimate.pose;
-        latency = poseEstimate.latency / 1000.0; // in milliseconds
 
         // Calculates standard deviation dynamically. Only use rotation in certain circumstances.
         boolean useRotation = poseEstimate.tagCount > 1 && 
