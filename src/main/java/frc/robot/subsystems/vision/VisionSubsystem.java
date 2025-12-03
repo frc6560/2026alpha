@@ -52,7 +52,7 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber(this.name + "/Latency", latency);
 
         // Just log the numbers lol i want to see this
-        if(poseEstimate.pose != new Pose2d() && poseEstimate.tagCount > 0){
+        if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
             SmartDashboard.putNumber(this.name + "/PoseX", poseEstimate.pose.getX());
             SmartDashboard.putNumber(this.name + "/PoseY", poseEstimate.pose.getY());
             SmartDashboard.putNumber(this.name + "/PoseTheta", poseEstimate.pose.getRotation().getDegrees());
