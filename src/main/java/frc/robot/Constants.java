@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -56,6 +60,18 @@ public final class Constants {
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
+  }
+
+  public static class LimelightConstants
+  {
+    String[] LIMELIGHT_NAMES = {
+      "limelight-left",
+      "limelight-right",
+    };
+
+    public static final double kStdvXYBase = 0.03; // No idea how to tune these base values.
+    public static final double kStdvThetaBase = 1.0; // See above
+    public static final double JUMP_TOLERANCE = 0.5; // meters. again, needs tuning.
   }
 
   public static final class ElevatorConstants {

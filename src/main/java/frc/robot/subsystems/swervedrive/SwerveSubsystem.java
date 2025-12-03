@@ -120,6 +120,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.replaceSwerveModuleFeedforward(driveFF);
     setMotorBrake(true);
     setupPathPlanner();
+    swerveDrive.setVisionMeasurementStdDevs(visionStdDevs);
   }
 
   /**
