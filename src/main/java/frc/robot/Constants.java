@@ -7,7 +7,9 @@ package frc.robot;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -64,11 +66,26 @@ public final class Constants {
 
   public static class LimelightConstants
   {
-    String[] LIMELIGHT_NAMES = {
-      "limelight-left",
-      "limelight-right",
-    };
+    public static final String[] LIMELIGHT_NAMES = {
+      "limelight"
+    }; // one limelight for now
 
+    
+    public static Pose3d getLimelightPose(String name){
+      Pose3d limelightPose;
+      switch(name){
+        case "limelight":
+          limelightPose = new Pose3d(
+            0.192,
+            -0.394,
+            0.0248,
+            new Rotation3d(0, 40, 90)
+          );
+        default:
+          limelightPose = new Pose3d();
+      }
+      return limelightPose;
+    }
     public static final double kStdvXYBase = 0.3; // No idea how to tune these base values.
     public static final double kStdvThetaBase = 1.0; // See above
     public static final double JUMP_TOLERANCE = 0.5; // meters. again, needs tuning.
