@@ -15,7 +15,9 @@ import frc.robot.subsystems.superstructure.SubsystemManager;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.ElevatorCommand;
 import frc.robot.commands.BallGrabberCommand;
+import frc.robot.subsystems.vision.LimelightVision;
 import frc.robot.subsystems.vision.VisionSubsystem;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +26,13 @@ import swervelib.SwerveInputStream;
 import frc.robot.commands.SubsystemManagerCommand;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.autonomous.Auto;
 import frc.robot.autonomous.AutoFactory;
 import frc.robot.autonomous.AutoRoutines;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.LimelightVision;
 
 
 public class RobotContainer {
@@ -44,7 +47,7 @@ public class RobotContainer {
     private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
     "swerve/falcon"));
     
-    private final List<VisionSubsystem> visionList = new ArrayList<VisionSubsystem>();
+    private final VisionSubsystem vision;
 
     // Subsystems
     private final Elevator elevator = new Elevator();
@@ -89,10 +92,13 @@ public class RobotContainer {
         }
       }
 
-      for(String limelightName : frc.robot.Constants.LimelightConstants.LIMELIGHT_NAMES) {
-        Pose3d cameraPose = frc.robot.Constants.LimelightConstants.getLimelightPose(limelightName);
-        visionList.add(new VisionSubsystem(drivebase, limelightName, cameraPose));
+      List<LimelightVision> limelights = new ArrayList<LimelightVision>();
+      for(String name : LimelightConstants.LIMELIGHT_NAMES) {
+        Pose3d cameraPose = LimelightConstants.getLimelightPose(name);
+        limelights.add(new LimelightVision(drivebase, name, cameraPose));
       }
+
+      vision = new VisionSubsystem(limelights);
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
     }
