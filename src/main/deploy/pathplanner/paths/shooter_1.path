@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.152,
-        "y": 4.018
+        "x": 3.2159728094086484,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4287946428571434,
-        "y": 3.350177036830357
+        "x": 2.4927674522657917,
+        "y": 3.332177036830357
       },
       "isLocked": false,
       "linkedName": "shooterpose1"
