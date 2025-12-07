@@ -139,34 +139,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateVisionPoseEstimator();
-    SmartDashboard.getEntry("Limelight TX").setDouble(LimelightHelpers.getTX("limelight-right"));
-  }
-
-  public void updateVisionPoseEstimator(){
-    Pose2d emptyPose = new Pose2d();
-    // This is viewed top down, facing the front of the robot
-    String[] limelightNames = {"limelight-right"};
-    // Vision fusion
-    for( String limelightName : limelightNames) {
-      LimelightHelpers.SetRobotOrientation(limelightName, swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0, 0, 0);
-      PoseEstimate limelightPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
-
-      if(limelightPoseEstimate == null) return;
-      Pose2d limelightPose = limelightPoseEstimate.pose;
-      if (limelightPose == null || limelightPoseEstimate.tagCount < 1 || limelightPose.equals(emptyPose)) return;
-      double adjustedTime = Timer.getFPGATimestamp() - limelightPoseEstimate.latency / 1000;
-      if(limelightPoseEstimate.avgTagDist > 2.7) return; // Don't use vision if the tags are too far away
-      if(adjustedTime > 0){
-        if(limelightPoseEstimate.tagCount < 2 && limelightPoseEstimate.avgTagDist > 1.3){
-          limelightPose = new Pose2d(
-            limelightPose.getTranslation(),
-            swerveDrive.getOdometryHeading()
-          );
-        }
-        swerveDrive.addVisionMeasurement(limelightPose, adjustedTime);
-      }
-    }
   }
 
   /** Full PID commands with all three parameters
