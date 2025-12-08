@@ -82,7 +82,12 @@ public final class Constants {
             new Rotation3d(0, 40, 90)
           );
         default:
-          limelightPose = new Pose3d();
+          limelightPose = new Pose3d(
+            0.192,
+            -0.394,
+            0.0248,
+            new Rotation3d(0, 40, 90)
+          );
       }
       return limelightPose;
     }
