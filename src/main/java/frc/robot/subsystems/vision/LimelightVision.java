@@ -58,6 +58,12 @@ public class LimelightVision{
         SmartDashboard.putNumber(this.name + "/XYStdv", kStdvXY);
         SmartDashboard.putNumber(this.name + "/ThetaStdv", kStdvTheta);
 
+        // templogging again
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseX", LimelightHelpers.getCameraPose3d_RobotSpace(name).getX());
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseY", LimelightHelpers.getCameraPose3d_RobotSpace(name).getY());
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseZ", LimelightHelpers.getCameraPose3d_RobotSpace(name).getZ());
+
+
         // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
             drivebase.getSwerveDrive().field.getObject("LimelightPose").setPose(robotPose2d);
