@@ -62,11 +62,6 @@ public class LimelightVision{
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
             drivebase.getSwerveDrive().field.getObject("LimelightPose").setPose(robotPose2d);
         }
-        // Rejects bad measurements, like sudden jumps in vision pose.
-        if(robotPose2d.getTranslation()
-            .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
-            return;
-        }
 
         // Calculates standard deviation dynamically. Only use rotation in certain circumstances.
         boolean useRotation = poseEstimate.tagCount > 1 && 
@@ -84,6 +79,13 @@ public class LimelightVision{
                              kStdvXY * LimelightConstants.kStdvXYBase,
                             kStdvTheta * LimelightConstants.kStdvThetaBase)
         );
+
+        // Rejects bad measurements, like sudden jumps in vision pose.
+        if(robotPose2d.getTranslation()
+            .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
+            return;
+        }
+
 
         // Adds our vision measurement
         drivebase.getSwerveDrive().addVisionMeasurement(
