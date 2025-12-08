@@ -48,14 +48,19 @@ public class LimelightVision{
         latency = poseEstimate.latency / 1000.0; // in seconds
 
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
-        SmartDashboard.putNumber(this.name + "/RecordTimestamp", Timer.getFPGATimestamp()); 
+        SmartDashboard.putNumber(this.name + "/AvgTagDist", poseEstimate.avgTagDist);
         SmartDashboard.putNumber(this.name + "/Latency", latency);
 
+        SmartDashboard.putNumber(this.name + "/XYStdv", kStdvXY);
+        SmartDashboard.putNumber(this.name + "/ThetaStdv", kStdvTheta);
+
+        // templogging
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseX", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getX());
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseY", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getY());
+        SmartDashboard.putNumber(this.name + "/RobotRelativePoseZ", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getZ());
         // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
-            SmartDashboard.putNumber(this.name + "/PoseX", robotPose2d.getX());
-            SmartDashboard.putNumber(this.name + "/PoseY", robotPose2d.getY());
-            SmartDashboard.putNumber(this.name + "/PoseTheta", robotPose2d.getRotation().getDegrees());
+            drivebase.getSwerveDrive().field.getObject("LimelightPose").setPose(robotPose2d);
         }
         // Rejects bad measurements, like sudden jumps in vision pose.
         if(robotPose2d.getTranslation()
