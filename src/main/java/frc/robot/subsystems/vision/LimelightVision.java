@@ -45,7 +45,7 @@ public class LimelightVision{
 
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
         robotPose2d = poseEstimate.pose;
-        latency = poseEstimate.latency / 1000.0; // in milliseconds
+        latency = poseEstimate.latency / 1000.0; // in seconds
 
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
         SmartDashboard.putNumber(this.name + "/RecordTimestamp", Timer.getFPGATimestamp()); 
