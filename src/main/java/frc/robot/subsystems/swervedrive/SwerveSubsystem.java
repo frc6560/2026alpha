@@ -524,20 +524,6 @@ public class SwerveSubsystem extends SubsystemBase {
     });
   }
 
-  /** Resets pose estimator to limelight pose */
-  public void updateOdometryWithVision(String limelightName) {
-    Pose2d emptyPose = new Pose2d();
-    PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
-    if (poseEstimate == null) return;
-    
-    Pose2d pose = poseEstimate.pose;
-
-    if (pose == null || pose.equals(emptyPose)) return;
-    if(DriverStation.isTeleop()){
-      resetOdometry(pose);
-    }
-  }
-
   /**
    * Drive according to the chassis robot oriented velocity.
    *
