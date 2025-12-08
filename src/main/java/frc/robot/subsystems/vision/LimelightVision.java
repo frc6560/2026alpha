@@ -17,24 +17,17 @@ public class LimelightVision{
     private Pose2d robotPose2d = new Pose2d();
     private double latency = 0.0;
     private final String name;
+    private final Pose3d cameraPose;
+
     private double kStdvXY = Double.POSITIVE_INFINITY;
     private double kStdvTheta = Double.POSITIVE_INFINITY;
 
     private SwerveSubsystem drivebase;
 
     public LimelightVision(SwerveSubsystem drivebase, String name, Pose3d cameraPose) {
-        // Sets the camera's position on the robot. The actual Pose3d this originates from comes from the camera.
-        LimelightHelpers.setCameraPose_RobotSpace(
-            name, 
-            cameraPose.getTranslation().getX(),
-            cameraPose.getTranslation().getY(),
-            cameraPose.getTranslation().getZ(),
-            cameraPose.getRotation().getX(),
-            cameraPose.getRotation().getY(),
-            cameraPose.getRotation().getZ()
-        );
         this.name = name;
         this.drivebase = drivebase;
+        this.cameraPose = cameraPose;
     }
 
     public void update(){
@@ -46,6 +39,17 @@ public class LimelightVision{
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
         robotPose2d = poseEstimate.pose;
         latency = poseEstimate.latency / 1000.0; // in seconds
+
+        // Sets the camera's position on the robot. The actual Pose3d this originates from comes from the camera.
+        LimelightHelpers.setCameraPose_RobotSpace(
+            name, 
+            cameraPose.getTranslation().getX(),
+            cameraPose.getTranslation().getY(),
+            cameraPose.getTranslation().getZ(),
+            cameraPose.getRotation().getX(),
+            cameraPose.getRotation().getY(),
+            cameraPose.getRotation().getZ()
+        );
 
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
         SmartDashboard.putNumber(this.name + "/AvgTagDist", poseEstimate.avgTagDist);
@@ -85,7 +89,6 @@ public class LimelightVision{
             .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
             return;
         }
-
 
         // Adds our vision measurement
         drivebase.getSwerveDrive().addVisionMeasurement(
