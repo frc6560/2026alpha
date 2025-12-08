@@ -91,7 +91,8 @@ public class SwerveSubsystem extends SubsystemBase {
    *
    * @param directory Directory of swerve drive config files.
    */
-  public SwerveSubsystem(File directory) { boolean blueAlliance = false;
+  public SwerveSubsystem(File directory) { 
+    boolean blueAlliance = true;
     Pose2d startingPose = blueAlliance ? new Pose2d(new Translation2d(Meter.of(3.216),
                                                                       Meter.of(4)),
                                                     Rotation2d.fromDegrees(-90))
