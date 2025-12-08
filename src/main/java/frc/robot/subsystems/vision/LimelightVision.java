@@ -28,15 +28,7 @@ public class LimelightVision{
         this.name = name;
         this.drivebase = drivebase;
         this.cameraPose = cameraPose;
-    }
 
-    public void update(){
-        updateRotation();
-        updateLimelightEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.name));
-    }
-
-
-    public void updateLimelightEstimate(PoseEstimate poseEstimate){
         // Sets the camera's position on the robot. The actual Pose3d this originates from comes from the camera.
         LimelightHelpers.setCameraPose_RobotSpace(
             name, 
@@ -47,7 +39,15 @@ public class LimelightVision{
             cameraPose.getRotation().getY(),
             cameraPose.getRotation().getZ()
         );
+    }
 
+    public void update(){
+        updateRotation();
+        updateLimelightEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.name));
+    }
+
+
+    public void updateLimelightEstimate(PoseEstimate poseEstimate){
         robotPose2d = poseEstimate.pose;
         latency = poseEstimate.latency / 1000.0; // in seconds
         
@@ -57,11 +57,6 @@ public class LimelightVision{
 
         SmartDashboard.putNumber(this.name + "/XYStdv", kStdvXY);
         SmartDashboard.putNumber(this.name + "/ThetaStdv", kStdvTheta);
-
-        // templogging
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseX", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getX());
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseY", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getY());
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseZ", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getZ());
 
         // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
@@ -73,7 +68,7 @@ public class LimelightVision{
             .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
             return;
         }
-        
+
         // Calculates standard deviation dynamically. Only use rotation in certain circumstances.
         boolean useRotation = poseEstimate.tagCount > 1 && 
                             poseEstimate.avgTagDist < Units.feetToMeters(5); // be AGGRESSIVE. this is only to tune out drift in edge cases.
