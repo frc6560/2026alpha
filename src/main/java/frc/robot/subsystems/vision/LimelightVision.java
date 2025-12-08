@@ -37,9 +37,6 @@ public class LimelightVision{
 
 
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
-        robotPose2d = poseEstimate.pose;
-        latency = poseEstimate.latency / 1000.0; // in seconds
-
         // Sets the camera's position on the robot. The actual Pose3d this originates from comes from the camera.
         LimelightHelpers.setCameraPose_RobotSpace(
             name, 
@@ -51,6 +48,9 @@ public class LimelightVision{
             cameraPose.getRotation().getZ()
         );
 
+        robotPose2d = poseEstimate.pose;
+        latency = poseEstimate.latency / 1000.0; // in seconds
+        
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
         SmartDashboard.putNumber(this.name + "/AvgTagDist", poseEstimate.avgTagDist);
         SmartDashboard.putNumber(this.name + "/Latency", latency);
@@ -62,11 +62,18 @@ public class LimelightVision{
         SmartDashboard.putNumber(this.name + "/RobotRelativePoseX", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getX());
         SmartDashboard.putNumber(this.name + "/RobotRelativePoseY", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getY());
         SmartDashboard.putNumber(this.name + "/RobotRelativePoseZ", LimelightHelpers.getCameraPose3d_RobotSpace(name).getTranslation().getZ());
+
         // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
             drivebase.getSwerveDrive().field.getObject("LimelightPose").setPose(robotPose2d);
         }
 
+        // Rejects bad measurements, like sudden jumps in vision pose.
+        if(robotPose2d.getTranslation()
+            .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
+            return;
+        }
+        
         // Calculates standard deviation dynamically. Only use rotation in certain circumstances.
         boolean useRotation = poseEstimate.tagCount > 1 && 
                             poseEstimate.avgTagDist < Units.feetToMeters(5); // be AGGRESSIVE. this is only to tune out drift in edge cases.
@@ -83,12 +90,6 @@ public class LimelightVision{
                              kStdvXY * LimelightConstants.kStdvXYBase,
                             kStdvTheta * LimelightConstants.kStdvThetaBase)
         );
-
-        // Rejects bad measurements, like sudden jumps in vision pose.
-        if(robotPose2d.getTranslation()
-            .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
-            return;
-        }
 
         // Adds our vision measurement
         drivebase.getSwerveDrive().addVisionMeasurement(
