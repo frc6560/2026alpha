@@ -388,9 +388,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   // a hack method to reset the MT2 gyro
   public void resetOdometryToLimelight() {
-    PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limlight-right");
+    PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     Pose2d pose = poseEstimate.pose;
-    resetOdometry(pose);
+    LimelightHelpers.SetRobotOrientation("limelight", pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
   }
   
   /**
