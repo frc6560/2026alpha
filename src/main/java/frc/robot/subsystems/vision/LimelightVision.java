@@ -46,6 +46,7 @@ public class LimelightVision{
         updateLimelightEstimate(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.name));
     }
 
+    Pose2d nullPose = new Pose2d();
 
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
         robotPose2d = poseEstimate.pose;
@@ -55,21 +56,16 @@ public class LimelightVision{
         SmartDashboard.putNumber(this.name + "/AvgTagDist", poseEstimate.avgTagDist);
         SmartDashboard.putNumber(this.name + "/Latency", latency);
 
-        SmartDashboard.putNumber(this.name + "/XYStdv", kStdvXY);
-        SmartDashboard.putNumber(this.name + "/ThetaStdv", kStdvTheta);
-
-        // templogging again
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseX", LimelightHelpers.getCameraPose3d_RobotSpace(name).getX());
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseY", LimelightHelpers.getCameraPose3d_RobotSpace(name).getY());
-        SmartDashboard.putNumber(this.name + "/RobotRelativePoseZ", LimelightHelpers.getCameraPose3d_RobotSpace(name).getZ());
-
-
-        // Just log the numbers lol i want to see this
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
-            drivebase.getSwerveDrive().field.getObject("LimelightPose").setPose(robotPose2d);
+            drivebase.getSwerveDrive().field.getObject(this.name + "/LimelightPose").setPose(robotPose2d);
         }
 
-        // Rejects bad measurements, like sudden jumps in vision pose.
+        // Rejects null measurements
+        if(robotPose2d == null || robotPose2d == nullPose){
+            return;
+        }
+
+        // Rejects bad measurements, like sudden jumps in vision pose
         if(robotPose2d.getTranslation()
             .getDistance(drivebase.getPose().getTranslation()) > LimelightConstants.JUMP_TOLERANCE){
             return;
