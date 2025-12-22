@@ -390,7 +390,12 @@ public class SwerveSubsystem extends SubsystemBase {
   public void resetOdometryToLimelight() {
     PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     Pose2d pose = poseEstimate.pose;
-    LimelightHelpers.SetRobotOrientation("limelight", pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    if(pose != null){
+      resetOdometry(pose);
+      System.out.println("Resetting odometry to Limelight pose: " + pose);
+    } else {
+      System.out.println("Limelight pose is null, cannot reset odometry.");
+    }
   }
   
   /**
