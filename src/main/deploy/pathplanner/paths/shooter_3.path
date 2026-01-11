@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2112959346064804,
-        "y": 4.0397327112268515
+        "x": 3.688371310763888,
+        "y": 2.659283492476851
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8830027488425918,
-        "y": 4.6699782986111105
+        "x": 1.8478305844907397,
+        "y": 2.9093319589120368
       },
       "isLocked": false,
       "linkedName": "shooterpose3"
@@ -20,8 +20,8 @@
         "y": 5.880739293981481
       },
       "prevControl": {
-        "x": 1.849461082175925,
-        "y": 5.297312282986111
+        "x": 0.8883991608796284,
+        "y": 4.944367766203703
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

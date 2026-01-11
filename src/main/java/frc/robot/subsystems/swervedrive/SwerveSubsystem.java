@@ -204,6 +204,21 @@ public class SwerveSubsystem extends SubsystemBase {
       return trackAprilTagCommand;
     }
 
+    // mod 180 because two values.
+    public void rotateCommand(double target){
+      m_pidControllerTheta.enableContinuousInput(-Math.PI, Math.PI);
+      SmartDashboard.getEntry("pid error").setDouble(m_pidControllerTheta.getError());
+      SmartDashboard.getEntry("pose in radians").setDouble(getPose().getRotation().getRadians());
+      SmartDashboard.getEntry("target pose").setDouble(target);
+      ChassisSpeeds targetSpeeds = new ChassisSpeeds(
+        0,
+        0,
+        (-1) * (m_pidControllerTheta.calculate(getPose().getRotation().getRadians(), target))
+      );
+  
+      swerveDrive.driveFieldOriented(targetSpeeds);
+    }
+
   @Override
   public void simulationPeriodic(){
   }
