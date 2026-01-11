@@ -49,6 +49,9 @@ public class LimelightVision{
     Pose2d nullPose = new Pose2d();
 
     public void updateLimelightEstimate(PoseEstimate poseEstimate){
+        if(poseEstimate == null){
+            return;
+        }
         robotPose2d = poseEstimate.pose;
         latency = poseEstimate.latency / 1000.0; // in seconds
         
