@@ -58,6 +58,7 @@ public class LimelightVision{
         SmartDashboard.putNumber(this.name + "/TagCount", poseEstimate.tagCount);
         SmartDashboard.putNumber(this.name + "/AvgTagDist", poseEstimate.avgTagDist);
         SmartDashboard.putNumber(this.name + "/Latency", latency);
+        SmartDashboard.putNumber(this.name + "/STDVX", kStdvXY);
 
         if(!Double.isNaN(poseEstimate.pose.getX()) && poseEstimate.tagCount > 0){
             drivebase.getSwerveDrive().field.getObject(this.name + "/LimelightPose").setPose(robotPose2d);
@@ -98,6 +99,15 @@ public class LimelightVision{
         );
     }
 
+    /** This is assuming that the gyro is going to be down. */
+    public void hardUpdate(){
+        PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(this.name);
+        if(poseEstimate != null){
+            robotPose2d = poseEstimate.pose;
+            if(robotPose2d!= null) drivebase.resetOdometry(robotPose2d);
+        }
+    }
+
     public void updateRotation(){
         Rotation2d robotRotation = drivebase.getPose().getRotation();
         LimelightHelpers.SetRobotOrientation(this.name, robotRotation.getDegrees(), 0, 0, 0, 0, 0);
@@ -118,5 +128,9 @@ public class LimelightVision{
 
     public double getLatency(){
         return latency;
+    }
+
+    public String getName(){
+        return name;
     }
 }

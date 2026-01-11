@@ -20,4 +20,12 @@ public class VisionSubsystem extends SubsystemBase{
             vision.update();
         }
     }
+
+    public void hardReset(String cameraName){
+        for(LimelightVision vision : visionList){
+            if(vision.getName().equals(cameraName)){
+                vision.hardUpdate();
+            }
+        }
+    }
 }

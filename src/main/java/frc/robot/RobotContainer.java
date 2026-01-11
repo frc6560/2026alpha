@@ -21,6 +21,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import swervelib.SwerveInputStream;
 import frc.robot.commands.SubsystemManagerCommand;
@@ -106,7 +107,11 @@ public class RobotContainer {
     private void configureBindings() {
         Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
         drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-        driverXbox.a().onTrue((Commands.runOnce(drivebase::resetOdometryToLimelight)));
+        driverXbox.a().onTrue(
+          Commands.defer(() -> {
+            return Commands.runOnce(() -> vision.hardReset("limelight"), vision);
+          }, Set.of(vision))
+        );
         driverXbox.b().onTrue((Commands.runOnce(() -> drivebase.trackAprilTag().schedule(), drivebase)));
         driverXbox.y().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
         driverXbox.x().onTrue(Commands.runOnce(() -> drivebase.sysIdDriveMotorCommand().schedule(), drivebase));
