@@ -4,7 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -23,13 +31,27 @@ public final class Constants {
   public static final class DrivebaseConstants {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
-    public static final double kS = 0; // TODO: tune with sysid at workshop
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.142; // TODO: tune with sysid at workshop
+    public static final double kV = 2.474;
+    public static final double kA = 0.230;
 
     public static final double kStdvX = 0.08; // TODO: tune once i get my hands on LL
     public static final double kStdvY = 0.08; 
     public static final double kStdvTheta = 3;
+
+    public static final double kP_translation = 4.0;
+    public static final double kP_rotation = 4.0;
+
+    public static final double kI_translation = 0.0;
+    public static final double kI_rotation = 0.0;
+
+    public static final double kD_translation = 0.0;
+    public static final double kD_rotation = 0.0;
+  }
+
+  public static final class FieldConstants{
+    // public static final Pose2d START = new Pose2d(3.152, 4.018, Rotation2d.fromDegrees(-90));
+    public static final Pose2d TARGET_POSE = new Pose2d(3.650, 4.010, Rotation2d.fromDegrees(0));
   }
 
   public static class OperatorConstants
@@ -40,6 +62,34 @@ public final class Constants {
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT = 6;
+  }
+
+  public static class LimelightConstants
+  {
+    public static final String[] LIMELIGHT_NAMES = {
+      "limelight"
+    }; // one limelight for now
+
+    
+    public static Pose3d getLimelightPose(String name){
+      Pose3d limelightPose;
+      switch(name){
+        case "limelight":
+          limelightPose = new Pose3d(
+            0.394,
+            -0.0248,
+            0.192,
+            new Rotation3d(0, 40, 0)
+          );
+          break;
+        default:
+          limelightPose = new Pose3d();
+      }
+      return limelightPose;
+    }
+    public static final double kStdvXYBase = 0.3; // No idea how to tune these base values.
+    public static final double kStdvThetaBase = 1.0; // See above
+    public static final double JUMP_TOLERANCE = 0.5; // meters. again, needs tuning.
   }
 
   public static final class ElevatorConstants {

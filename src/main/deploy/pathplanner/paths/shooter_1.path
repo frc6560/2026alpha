@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 0.917,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 6.5
+        "x": 1.7652813293851253,
+        "y": 4.0
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shooterpose1"
     },
     {
       "anchor": {
-        "x": 4.958476027397261,
-        "y": 6.012192024384049
+        "x": 2.916738281249999,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 3.9584760273972606,
-        "y": 7.012192024384048
-      },
-      "nextControl": {
-        "x": 5.958476027397261,
-        "y": 5.012192024384049
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.225280307703473,
-        "y": 6.012192024384049
-      },
-      "prevControl": {
-        "x": 6.975280307703473,
-        "y": 7.512192024384059
+        "x": 2.3309905209699875,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shooterpose2"
     }
   ],
   "rotationTargets": [],
@@ -49,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -66,5 +50,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

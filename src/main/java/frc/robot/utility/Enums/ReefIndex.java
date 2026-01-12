@@ -1,4 +1,4 @@
-package com.team6560.frc2025.utility.Enums;
+package frc.robot.utility.Enums;
 
 public enum ReefIndex {
     FAR_RIGHT,
