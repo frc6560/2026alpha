@@ -70,7 +70,6 @@ public class RobotContainer {
 
     public RobotContainer() {
       arm.setDefaultCommand(new ArmCommand(arm, controls));
-      configureBindings();
 
       elevator.setDefaultCommand(new ElevatorCommand(elevator,controls));
       ballGrabber.setDefaultCommand(new BallGrabberCommand(ballGrabber, controls));
@@ -100,6 +99,7 @@ public class RobotContainer {
       }
 
       vision = new VisionSubsystem(limelights);
+      configureBindings();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
     }
@@ -114,7 +114,7 @@ public class RobotContainer {
         );
         driverXbox.b().onTrue((Commands.runOnce(() -> drivebase.trackAprilTag().schedule(), drivebase)));
         driverXbox.y().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
-        driverXbox.x().onTrue(Commands.runOnce(() -> drivebase.sysIdDriveMotorCommand().schedule(), drivebase));
+        driverXbox.x().onTrue(Commands.runOnce(() -> drivebase.alignToTrenchCommand(), drivebase));
         driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroNoAprilTagsGyro)));
         driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
         driverXbox.rightBumper().onTrue(Commands.none());

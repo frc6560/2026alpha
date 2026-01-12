@@ -205,11 +205,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     // mod 180 because two values.
-    public void rotateCommand(double target){
+    public void alignToTrenchCommand(){
       m_pidControllerTheta.enableContinuousInput(-Math.PI, Math.PI);
-      SmartDashboard.getEntry("pid error").setDouble(m_pidControllerTheta.getError());
-      SmartDashboard.getEntry("pose in radians").setDouble(getPose().getRotation().getRadians());
-      SmartDashboard.getEntry("target pose").setDouble(target);
+
+      SmartDashboard.getEntry("Yaw error").setDouble(m_pidControllerTheta.getError());
+      SmartDashboard.getEntry("Pose in radians").setDouble(getPose().getRotation().getRadians());
+
+      double target = MathUtil.angleModulus(getPose().getRotation().getRadians() - (MathUtil.inputModulus(getPose().getRotation().getRadians(), - Math.PI/2 , Math.PI/2)));
+      SmartDashboard.getEntry("Target pose").setDouble(target);
+
       ChassisSpeeds targetSpeeds = new ChassisSpeeds(
         0,
         0,
